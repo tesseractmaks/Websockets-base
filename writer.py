@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 from config import sender_log
 
 
@@ -9,19 +11,26 @@ async def send_messages(HOST, PORT, message):
         HOST, PORT
     )
 
-    data = await reader.read(300)
+    data = await reader.readline()
     sender_log.debug(f'{data.decode()!r}')
 
     writer.write(query.encode())
     sender_log.debug(query)
     await writer.drain()
 
-    writer.write(message.encode())
-    sender_log.debug(message)
-    await writer.drain()
+    token = await reader.readline()
+    if not json.loads(token):
+        sender_log.debug("Неизвестный токен. Проверьте его или зарегистрируйте заново.")
+        await writer.drain()
+    else:
+        sender_log.debug(f'{token.decode()!r}')
 
-    writer.write("\n".encode())
-    await writer.drain()
+        writer.write(message.encode())
+        sender_log.debug(message)
+        await writer.drain()
+
+        writer.write("\n".encode())
+        await writer.drain()
 
     writer.close()
     await writer.wait_closed()
