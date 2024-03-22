@@ -6,7 +6,6 @@ from pathlib import Path
 from reader import get_messages
 
 
-
 OUT_PATH = (Path(__file__).parent / 'chat.log').absolute()
 HOST = "188.246.233.198"
 PORT = 5000

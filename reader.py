@@ -3,6 +3,7 @@ import datetime
 import aiofiles
 from config import reader_log
 
+
 async def write_to_disk(data, file_path):
     time_now = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
     async with aiofiles.open(file_path, mode='a') as f:
