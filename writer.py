@@ -53,7 +53,8 @@ async def authorise(HOST, PORT, token):
 
     await register(HOST, PORT, token)
     await authorise(HOST, PORT, token)
-async def send_messages(HOST, PORT, message):
+
+async def submit_message(HOST, PORT, message):
 
     reader, writer = await asyncio.open_connection(
         HOST, PORT
@@ -88,4 +89,4 @@ message = "!!! -My message -!!!\n"
 send_host = "minechat.dvmn.org"
 send_port = 5050
 
-asyncio.run(send_messages(send_host, send_port, message))
+asyncio.run(submit_message(send_host, send_port, message))
