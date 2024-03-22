@@ -1,10 +1,10 @@
 import argparse
 import asyncio
-import datetime
 
 from pathlib import Path
 
-import aiofiles
+from reader import get_messages
+
 
 OUT_PATH = (Path(__file__).parent / 'chat.log').absolute()
 HOST = "188.246.233.198"
@@ -34,23 +34,6 @@ def get_arguments():
     return args.path, args.host, args.port
 
 
-async def write_to_disk(data, file_path=OUT_PATH):
-    time_now = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-    async with aiofiles.open(file_path, mode='a') as f:
-        await f.write(f"[{time_now}] {data.decode()!r}\n")
-
-
-async def get_messages(OUT_PATH, HOST, PORT):
-    reader, writer = await asyncio.open_connection(
-        HOST, PORT,
-    )
-    while True:
-        data = await reader.read(300)
-        await write_to_disk(data, OUT_PATH)
-        print(f'Received: {data.decode()!r}')
-    writer.close()
-    await writer.wait_closed()
-
 if __name__ == '__main__':
 
     path, host, port = get_arguments()
@@ -61,7 +44,9 @@ if __name__ == '__main__':
     if not port:
         port = PORT
 
+
     asyncio.run(get_messages(path, host, port))
+
 
 
 
