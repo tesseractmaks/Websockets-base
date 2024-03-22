@@ -1,4 +1,5 @@
 import asyncio
+from config import sender_log
 
 
 async def send_messages(HOST, PORT, message):
@@ -9,12 +10,14 @@ async def send_messages(HOST, PORT, message):
     )
 
     data = await reader.read(300)
-    print(f'{data.decode()!r}')
+    sender_log.debug(f'{data.decode()!r}')
 
     writer.write(query.encode())
+    sender_log.debug(query)
     await writer.drain()
 
     writer.write(message.encode())
+    sender_log.debug(message)
     await writer.drain()
 
     writer.write("\n".encode())
