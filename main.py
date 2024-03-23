@@ -17,16 +17,19 @@ def get_arguments():
         description='The code run chat.'
     )
     parser.add_argument(
+        "-ph",
         '--path',
         type=str,
         help="Set path to catalog use arguments: '--path'"
     )
     parser.add_argument(
+        "-ht",
         '--host',
         type=str,
         help="Enter host use arguments: '--host'"
     )
     parser.add_argument(
+        "p",
         '--port',
         type=int,
         help="Enter port use argument: '--port' set number"

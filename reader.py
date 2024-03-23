@@ -14,10 +14,13 @@ async def get_messages(OUT_PATH, HOST, PORT):
     reader, writer = await asyncio.open_connection(
         HOST, PORT,
     )
+    try:
 
-    while True:
-        data = await reader.read(300)
-        await write_to_disk(data, OUT_PATH)
-        print(f'Received: {data.decode()!r}')
-    writer.close()
-    await writer.wait_closed()
+        while True:
+            data = await reader.read(300)
+            await write_to_disk(data, OUT_PATH)
+            print(f'Received: {data.decode()!r}')
+        writer.close()
+        await writer.wait_closed()
+    except (ConnectionRefusedError, ConnectionResetError, ConnectionError) as exc:
+        reader_log.error(exc)
