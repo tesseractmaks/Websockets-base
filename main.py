@@ -1,14 +1,15 @@
 import argparse
 import asyncio
 
+from os import getenv
 from pathlib import Path
 
 from reader import get_messages
 
 
 OUT_PATH = (Path(__file__).parent / 'chat.log').absolute()
-HOST = "188.246.233.198"
-PORT = 5000
+HOST_CLIENT = str(getenv("HOST_CLIENT", "188.246.233.198"))
+PORT_CLIENT = int(getenv("PORT_CLIENT", 5000))
 
 
 def get_arguments():
@@ -40,13 +41,9 @@ if __name__ == '__main__':
     if not path:
         path = OUT_PATH
     if not host:
-        host = HOST
+        host = HOST_CLIENT
     if not port:
-        port = PORT
-
+        port = PORT_CLIENT
 
     asyncio.run(get_messages(path, host, port))
-
-
-
 
