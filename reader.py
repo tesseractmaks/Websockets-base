@@ -25,3 +25,5 @@ async def get_messages(OUT_PATH, HOST, PORT):
         await writer.wait_closed()
     except (ConnectionRefusedError, ConnectionResetError, ConnectionError) as exc:
         reader_log.error(exc)
+        writer.close()
+        await writer.wait_closed()

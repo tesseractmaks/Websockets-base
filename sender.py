@@ -16,23 +16,28 @@ async def register(HOST, PORT, parser):
 
     writer.write("\n".encode())
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
-    data2 = await reader.readline()
-    sender_log.debug(f"{data2.decode()!r}")
+    data_2 = await reader.readline()
+    sender_log.debug(f"{data_2.decode()!r}")
 
     writer.write(parser.reg.encode())
     sender_log.debug(f"{parser.reg}")
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
     writer.write("\n".encode())
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
-    data3 = await reader.readline()
-    sender_log.debug(f"{data3.decode()!r}")
+    data_3 = await reader.readline()
+    sender_log.debug(f"{data_3.decode()!r}")
 
     writer.write("\n".encode())
     await writer.drain()
-
     writer.close()
     await writer.wait_closed()
 
@@ -46,9 +51,13 @@ async def authorise(HOST, PORT, parser):
     writer.write(parser.token.encode())
     sender_log.debug(f"{parser.token} --")
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
     writer.write("\n".encode())
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
     data3 = await reader.readline()
     sender_log.debug(f"{data3.decode()!r}")
@@ -60,6 +69,8 @@ async def submit_message(reader, writer, message):
 
     writer.write("\n".encode())
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
     data = await reader.readline()
     writer.write(data)
@@ -67,14 +78,17 @@ async def submit_message(reader, writer, message):
     writer.write("\n".encode())
     await writer.drain()
     await asyncio.sleep(0.05)
+    writer.close()
+    await writer.wait_closed()
 
     writer.write(encode_utf8(f"{message.strip()}\n"))
     sender_log.debug(message)
     await writer.drain()
+    writer.close()
+    await writer.wait_closed()
 
     writer.write("\n".encode())
     await writer.drain()
-
     writer.close()
     await writer.wait_closed()
 
