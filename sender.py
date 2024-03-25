@@ -8,8 +8,8 @@ def encode_utf8(data):
     return data.encode("utf-8", "ignore")
 
 
-async def register(HOST, PORT, parser):
-    reader, writer = await asyncio.open_connection(HOST, PORT)
+async def register(host, port, parser):
+    reader, writer = await asyncio.open_connection(host, port)
 
     data = await reader.readline()
     sender_log.debug(f"{data.decode()!r}")
@@ -42,8 +42,8 @@ async def register(HOST, PORT, parser):
     await writer.wait_closed()
 
 
-async def authorise(HOST, PORT, parser):
-    reader, writer = await asyncio.open_connection(HOST, PORT)
+async def authorise(host, port, parser):
+    reader, writer = await asyncio.open_connection(host, port)
 
     data = await reader.readline()
     sender_log.debug(f"{data.decode()!r}")

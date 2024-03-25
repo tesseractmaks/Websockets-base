@@ -10,16 +10,16 @@ async def write_to_disk(data, file_path):
         await f.write(f"[{time_now}] {data.decode()!r}\n")
 
 
-async def get_messages(OUT_PATH, HOST, PORT):
+async def get_messages(out_path, host, port):
     reader, writer = await asyncio.open_connection(
-        HOST,
-        PORT,
+        host,
+        port,
     )
     try:
 
         while True:
             data = await reader.read(300)
-            await write_to_disk(data, OUT_PATH)
+            await write_to_disk(data, out_path)
             print(f"Received: {data.decode()!r}")
         writer.close()
         await writer.wait_closed()
