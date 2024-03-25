@@ -1,6 +1,6 @@
 import argparse
 import asyncio
-from config import sender_log
+from config import sender_log, OpenConnection
 from os import getenv
 
 
@@ -9,88 +9,78 @@ def encode_utf8(data):
 
 
 async def register(host, port, parser):
-    reader, writer = await asyncio.open_connection(host, port)
+    async with OpenConnection(host, port) as (reader, writer):
+        data = await reader.readline()
+        sender_log.debug(f"{data.decode()!r}")
 
-    data = await reader.readline()
-    sender_log.debug(f"{data.decode()!r}")
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        data_2 = await reader.readline()
+        sender_log.debug(f"{data_2.decode()!r}")
 
-    data_2 = await reader.readline()
-    sender_log.debug(f"{data_2.decode()!r}")
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write(parser.reg.encode())
+        sender_log.debug(f"{parser.reg}")
+        await writer.drain()
 
-    writer.write(parser.reg.encode())
-    sender_log.debug(f"{parser.reg}")
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        data_3 = await reader.readline()
+        sender_log.debug(f"{data_3.decode()!r}")
 
-    data_3 = await reader.readline()
-    sender_log.debug(f"{data_3.decode()!r}")
-
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
 
 async def authorise(host, port, parser):
-    reader, writer = await asyncio.open_connection(host, port)
+    async with OpenConnection(host, port) as (reader, writer):
+        data = await reader.readline()
+        sender_log.debug(f"{data.decode()!r}")
 
-    data = await reader.readline()
-    sender_log.debug(f"{data.decode()!r}")
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write(parser.token.encode())
+        sender_log.debug(f"{parser.token} --")
+        await writer.drain()
 
-    writer.write(parser.token.encode())
-    sender_log.debug(f"{parser.token} --")
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
-
-    data3 = await reader.readline()
-    sender_log.debug(f"{data3.decode()!r}")
-
-    await submit_message(reader, writer, parser.msg)
+    async with OpenConnection(host, port) as (reader, writer):
+        data3 = await reader.readline()
+        sender_log.debug(f"{data3.decode()!r}")
+        await submit_message(reader, writer, parser.msg)
 
 
-async def submit_message(reader, writer, message):
+async def submit_message(host, port, message):
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        data = await reader.readline()
+        writer.write(data)
+        await writer.drain()
 
-    data = await reader.readline()
-    writer.write(data)
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
-    writer.write("\n".encode())
-    await writer.drain()
-    await asyncio.sleep(0.05)
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write(encode_utf8(f"{message.strip()}\n"))
+        sender_log.debug(message)
+        await writer.drain()
 
-    writer.write(encode_utf8(f"{message.strip()}\n"))
-    sender_log.debug(message)
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
-
-    writer.write("\n".encode())
-    await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+    async with OpenConnection(host, port) as (reader, writer):
+        writer.write("\n".encode())
+        await writer.drain()
 
 
 def argparser():
