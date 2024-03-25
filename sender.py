@@ -9,18 +9,16 @@ def encode_utf8(data):
 
 
 async def register(HOST, PORT, parser):
-    reader, writer = await asyncio.open_connection(
-        HOST, PORT
-    )
+    reader, writer = await asyncio.open_connection(HOST, PORT)
 
     data = await reader.readline()
-    sender_log.debug(f'{data.decode()!r}')
+    sender_log.debug(f"{data.decode()!r}")
 
     writer.write("\n".encode())
     await writer.drain()
 
     data2 = await reader.readline()
-    sender_log.debug(f'{data2.decode()!r}')
+    sender_log.debug(f"{data2.decode()!r}")
 
     writer.write(parser.reg.encode())
     sender_log.debug(f"{parser.reg}")
@@ -30,7 +28,7 @@ async def register(HOST, PORT, parser):
     await writer.drain()
 
     data3 = await reader.readline()
-    sender_log.debug(f'{data3.decode()!r}')
+    sender_log.debug(f"{data3.decode()!r}")
 
     writer.write("\n".encode())
     await writer.drain()
@@ -40,12 +38,10 @@ async def register(HOST, PORT, parser):
 
 
 async def authorise(HOST, PORT, parser):
-    reader, writer = await asyncio.open_connection(
-        HOST, PORT
-    )
+    reader, writer = await asyncio.open_connection(HOST, PORT)
 
     data = await reader.readline()
-    sender_log.debug(f'{data.decode()!r}')
+    sender_log.debug(f"{data.decode()!r}")
 
     writer.write(parser.token.encode())
     sender_log.debug(f"{parser.token} --")
@@ -55,7 +51,7 @@ async def authorise(HOST, PORT, parser):
     await writer.drain()
 
     data3 = await reader.readline()
-    sender_log.debug(f'{data3.decode()!r}')
+    sender_log.debug(f"{data3.decode()!r}")
 
     await submit_message(reader, writer, parser.msg)
 
@@ -87,11 +83,23 @@ def argparser():
 
     parser = argparse.ArgumentParser(description="Chat client")
 
-    parser.add_argument("-ht", "--host", type=str, default=str(getenv("CHAT_HOST", "minechat.dvmn.org")), help="Enter host")
-    parser.add_argument("-p", "--port", type=int, default=int(getenv("CHAT_PORT", 5050)), help="Enter port")
-    parser.add_argument("-t", "--token", type=str,  help="Enter hash token")
+    parser.add_argument(
+        "-ht",
+        "--host",
+        type=str,
+        default=str(getenv("CHAT_HOST", "minechat.dvmn.org")),
+        help="Enter host",
+    )
+    parser.add_argument(
+        "-p",
+        "--port",
+        type=int,
+        default=int(getenv("CHAT_PORT", 5050)),
+        help="Enter port",
+    )
+    parser.add_argument("-t", "--token", type=str, help="Enter hash token")
     parser.add_argument("-r", "--reg", type=str, help="Enter nickname for registration")
-    parser.add_argument('msg', type=str, help="Enter message")
+    parser.add_argument("msg", type=str, help="Enter message")
     return parser.parse_args()
 
 
@@ -105,6 +113,7 @@ async def main():
 
     if parser.token:
         await authorise(host, port, parser)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
